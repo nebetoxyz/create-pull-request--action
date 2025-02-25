@@ -1,0 +1,35 @@
+name: Create a Pull Request
+description: Create a Pull Request on Github
+author: Nebeto
+
+branding:
+  icon: git-pull-request
+  color: black
+
+inputs:
+  is-draft:
+    description: Flag the Pull Request as a draft or not, default to true
+    required: false
+    default: true
+  from-branch:
+    description: Source branch, default to github.ref_name
+    required: false
+    default: ${{ github.ref_name }}
+  to-branch:
+    description: Target branch, default to github.event.repository.default_branch
+    required: false
+    default: ${{ github.event.repository.default_branch }}
+  assignee:
+    description: Assignee, default to github.actor
+    required: false
+    default: ${{ github.actor }}
+
+outputs:
+  id:
+    description: ID of the created Pull Request
+  url:
+    description: URL of the created Pull Request
+
+runs:
+  using: node20
+  main: dist/index.js

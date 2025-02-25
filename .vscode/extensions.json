@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "Github.vscode-github-actions",
+        "GitHub.vscode-codeql",
+        "GitHub.vscode-pull-request-github",
+        "esbenp.prettier-vscode"
+    ]
+}

@@ -1,0 +1,11 @@
+.github/dependabot.yml                          @nebetoxyz/admins
+.github/CODEOWNERS                              @nebetoxyz/admins
+
+.vscode/                                        @nebetoxyz/admins
+
+LICENCE.md                                      @nebetoxyz/admins
+CONTRIBUTING.md                                 @nebetoxyz/admins
+SECURITY.md                                     @nebetoxyz/admins
+README.md                                       @nebetoxyz/developers @nebetoxyz/admins
+
+src/                                            @nebetoxyz/developers @nebetoxyz/admins
