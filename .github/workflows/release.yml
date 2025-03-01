@@ -1,0 +1,57 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: ${{ vars.NODE_VERSION }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    outputs:
+      release_created: ${{ steps.release.release_created }}
+      tag_name: ${{ steps.release.tag_name }}
+    steps:
+      - id: release
+        name: Release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: node
+  post-release:
+    runs-on: ubuntu-latest
+    name: Post Release
+    needs: release
+    if: ${{ needs.release.outputs.release_created }}
+    steps:
+      - id: checkout-code
+        uses: actions/checkout@v4
+      - id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - id: setup-dependencies
+        name: Setup dependencies
+        run: npm install
+      - id: build-code
+        name: Build
+        run: npm run build
+      - id: upload-artifact
+        name: Upload Artifact
+        run: gh release upload ${{ needs.release.outputs.tag_name }} ./dist
+      - id: report-quality-sonarqube
+        name: Report on SonarQube
+        uses: SonarSource/sonarqube-scan-action@4
+        with:
+          args: >
+            -Dsonar.projectVersion=${{ needs.release.outputs.tag_name }}

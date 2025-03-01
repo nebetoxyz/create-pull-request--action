@@ -2,6 +2,7 @@
     "recommendations": [
         "Github.vscode-github-actions",
         "GitHub.vscode-codeql",
+        "google.geminicodeassist",
         "GitHub.vscode-pull-request-github",
         "esbenp.prettier-vscode"
     ]

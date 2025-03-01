@@ -2,19 +2,21 @@
   "name": "create-pull-request-action",
   "version": "1.0.0",
   "description": "Create a Pull Request on Github",
+  "type": "module",
   "author": {
     "name": "Nebeto",
     "email": "contact@nebeto.xyz",
     "url": "https://www.nebeto.xyz"
   },
   "license": "./LICENCE.md",
-  "main": "index.js",
+  "main": "dist/index.js",
   "homepage": "https://github.com/nebetoxyz/create-pull-request-action#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nebetoxyz/create-pull-request-action.git"
   },
   "bugs": {
+    "email": "contact@nebeto.xyz",
     "url": "https://github.com/nebetoxyz/create-pull-request-action/issues"
   },
   "keywords": [
@@ -26,7 +28,7 @@
     "lint:code": "eslint src/",
     "lint:tests": "eslint tests/",
     "lint": "npm run lint:code && npm run lint:tests",
-    "test": "jest --coverage=true --verbose --json",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage=true --verbose --json",
     "build": "rollup src/index.js --file dist/index.js --format iife --compact --validate"
   },
   "dependencies": {
