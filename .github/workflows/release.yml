@@ -46,7 +46,10 @@ jobs:
         run: npm install
       - id: build-code
         name: Build
-        run: npm run build
+        run: |
+          npm run lint
+          npm run test
+          npm run build
       - id: upload-artifact
         name: Upload Artifact
         run: gh release upload ${{ needs.release.outputs.tag_name }} ./dist

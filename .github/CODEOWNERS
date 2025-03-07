@@ -5,6 +5,15 @@
 LICENCE.md @nebetoxyz/admins
 CONTRIBUTING.md @nebetoxyz/admins
 SECURITY.md @nebetoxyz/admins
+FUNDING.yml @nebetoxyz/admins
 README.md @nebetoxyz/developers @nebetoxyz/admins
 
 src/ @nebetoxyz/developers @nebetoxyz/admins
+tests/ @nebetoxyz/developers @nebetoxyz/admins
+package.json @nebetoxyz/developers @nebetoxyz/admins
+package-lock.json @nebetoxyz/developers @nebetoxyz/admins
+action.yml @nebetoxyz/developers @nebetoxyz/admins
+.gitignore @nebetoxyz/developers @nebetoxyz/admins
+eslint.config.js @nebetoxyz/developers @nebetoxyz/admins
+jest.config.js @nebetoxyz/developers @nebetoxyz/admins
+sonar-project.properties @nebetoxyz/developers @nebetoxyz/admins

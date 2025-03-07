@@ -25,10 +25,10 @@
     "ci"
   ],
   "scripts": {
-    "lint:code": "eslint src/",
-    "lint:tests": "eslint tests/",
-    "lint": "npm run lint:code && npm run lint:tests",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage=true --verbose --json",
+    "lint:code": "eslint src/ --format json --output-file reports/eslint-code-report.json",
+    "lint:test": "eslint tests/ --format json --output-file reports/eslint-test-report.json",
+    "lint": "npm run lint:code && npm run lint:test",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "build": "rollup src/index.js --file dist/index.js --format iife --compact --validate"
   },
   "dependencies": {

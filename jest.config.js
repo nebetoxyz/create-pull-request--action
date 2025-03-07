@@ -2,7 +2,7 @@ export default {
   clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: ["./src/**"],
-  coverageDirectory: "./coverage",
+  coverageDirectory: "./reports",
   coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
   coverageReporters: ["json-summary", "text", "lcov"],
   coverageThreshold: {
