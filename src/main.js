@@ -4,11 +4,15 @@ import { createPullRequest } from "./pull-request/service";
 
 export async function main() {
   const targetBranch = core.getInput("to-branch");
-  const assignee = core.getInput("assignee");
+  const assignees = core.getInput("assignees").split(/\r|\n/);
   const isDraft = core.getBooleanInput("is-draft");
 
   try {
-    const { id, url } = createPullRequest(targetBranch, assignee, isDraft);
+    const { id, url } = await createPullRequest(
+      targetBranch,
+      assignees,
+      isDraft
+    );
 
     core.setOutput("id", id);
     core.setOutput("url", url);

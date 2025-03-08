@@ -10,11 +10,11 @@ jest.unstable_mockModule("../src/pull-request/service", () => ({
 const { main } = await import("../src/main.js");
 const { createPullRequest } = await import("../src/pull-request/service.js");
 
-describe("index.js", () => {
+describe("Default", () => {
   beforeEach(() => {
     const input = {
       "to-branch": "main",
-      assignee: "fgruchala",
+      assignees: "fgruchala\ntest",
       "is-draft": true,
     };
 
@@ -36,13 +36,17 @@ describe("index.js", () => {
 
     expect(core.getInput).toHaveBeenCalledTimes(2);
     expect(core.getInput).toHaveBeenCalledWith("to-branch");
-    expect(core.getInput).toHaveBeenCalledWith("assignee");
+    expect(core.getInput).toHaveBeenCalledWith("assignees");
 
     expect(core.getBooleanInput).toHaveBeenCalledTimes(1);
     expect(core.getBooleanInput).toHaveBeenCalledWith("is-draft");
 
     expect(createPullRequest).toHaveBeenCalledTimes(1);
-    expect(createPullRequest).toHaveBeenCalledWith("main", "fgruchala", true);
+    expect(createPullRequest).toHaveBeenCalledWith(
+      "main",
+      ["fgruchala", "test"],
+      true
+    );
 
     expect(core.setOutput).toHaveBeenCalledTimes(2);
     expect(core.setOutput).toHaveBeenCalledWith("id", 1);
@@ -61,13 +65,17 @@ describe("index.js", () => {
 
     expect(core.getInput).toHaveBeenCalledTimes(2);
     expect(core.getInput).toHaveBeenCalledWith("to-branch");
-    expect(core.getInput).toHaveBeenCalledWith("assignee");
+    expect(core.getInput).toHaveBeenCalledWith("assignees");
 
     expect(core.getBooleanInput).toHaveBeenCalledTimes(1);
     expect(core.getBooleanInput).toHaveBeenCalledWith("is-draft");
 
     expect(createPullRequest).toHaveBeenCalledTimes(1);
-    expect(createPullRequest).toHaveBeenCalledWith("main", "fgruchala", true);
+    expect(createPullRequest).toHaveBeenCalledWith(
+      "main",
+      ["fgruchala", "test"],
+      true
+    );
 
     expect(core.setOutput).toHaveBeenCalledTimes(0);
 

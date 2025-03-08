@@ -32,8 +32,8 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
 
 You will have as outputs :
 
-- `${{ steps.create-or-get-existing-pull-request.outputs.id }}` : the unique ID of the Pull Request, e.g. **1** ;
-- `${{ steps.create-or-get-existing-pull-request.outputs.url }}` : the URL of the Pull Request, e.g. **https://github.com/.../pulls/1**
+- `${{ steps.create-or-get-existing-pull-request.outputs.id }}` : the unique ID of the Pull Request, given by Github e.g. **1** ;
+- `${{ steps.create-or-get-existing-pull-request.outputs.url }}` : the URL of the Pull Request, given by Github e.g. **https://github.com/.../pulls/1**
 
 ## Samples
 
@@ -43,9 +43,9 @@ You will have as outputs :
 
 ## Contact
 
-For any question or feature suggestion, you can take a look and open, if necessary, a new [discussion](https://github.com/nebetoxyz/create-pull-request--action/discussions)
+For any question or feature suggestion, you can take a look and open, if necessary, a new [discussion](https://github.com/nebetoxyz/create-pull-request--action/discussions).
 
-For any bug, you can take a look to our active issues and open, if necessary, a new [issue](https://github.com/nebetoxyz/create-pull-request--action/issues)
+For any bug, you can take a look to our active issues and open, if necessary, a new [issue](https://github.com/nebetoxyz/create-pull-request--action/issues).
 
 ## Troubleshooting
 
@@ -59,4 +59,4 @@ permissions:
   pull-request: write
 ```
 
-More informations about [permissions in Github Action](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token)
+More informations about [permissions in Github Action](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token).

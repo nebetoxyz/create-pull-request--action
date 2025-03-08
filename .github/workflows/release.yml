@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - dist/**
 
 permissions:
   id-token: write
@@ -13,6 +15,10 @@ permissions:
 
 env:
   NODE_VERSION: ${{ vars.NODE_VERSION }}
+  SONAR_ORGANIZATION_ID: ${{ vars.SONAR_ORGANIZATION_ID }}
+  GITHUB_ORGANIZATION_ID: ${{ github.repository_owner }}
+  PROJECT_ID: ${{ vars.PROJECT_ID }}
+  PROJECT_DESCRIPTION: ${{ vars.PROJECT_DESCRIPTION }}
 
 jobs:
   release:
@@ -21,6 +27,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.release_created }}
       tag_name: ${{ steps.release.tag_name }}
+      version: ${{ steps.release.version }}
     steps:
       - id: release
         name: Release
@@ -52,10 +59,24 @@ jobs:
           npm run build
       - id: upload-artifact
         name: Upload Artifact
-        run: gh release upload ${{ needs.release.outputs.tag_name }} ./dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ needs.release.outputs.tag_name }} ./dist
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "build(main): release ${{ needs.release.outputs.version }}"
+          git push
       - id: report-quality-sonarqube
         name: Report on SonarQube
         uses: SonarSource/sonarqube-scan-action@4
         with:
           args: >
             -Dsonar.projectVersion=${{ needs.release.outputs.tag_name }}
+            -Dsonar.organization=${{ env.SONAR_ORGANIZATION_ID }}
+            -Dsonar.projectKey=${{ env.SONAR_ORGANIZATION_ID }}_${{ env.PROJECT_ID }}
+            -Dsonar.projectDescription=${{ env.PROJECT_DESCRIPTION }}
+            -Dsonar.links.ci=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/actions
+            -Dsonar.links.homepage=https://github.com/marketplace/actions/${{ env.PROJECT_ID }}
+            -Dsonar.links.issue=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/issues
+            -Dsonar.links.scm=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}

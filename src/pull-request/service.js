@@ -4,23 +4,23 @@ import * as fs from "fs";
 /**
  * @typedef PullRequest
  * @type {object}
- * @property {string} id e.g. 1
- * @property {string} url e.g. https://github.com/nebetoxyz/create-pull-request-action/pull/1
+ * @property {string} id e.g. "1"
+ * @property {string} url e.g. "https://github.com/nebetoxyz/create-pull-request-action/pull/1"
  * @property {object} [source]
- * @property {string} source.branch e.g. feat/1-init
+ * @property {string} source.branch e.g. "feat/1-init"
  */
 
 /**
  * @typedef Context
  * @type {object}
- * @property {string} owner e.g. nebetoxyz
- * @property {string} repository e.g. create-pull-request-action
- * @property {string} actor e.g. fgruchala
+ * @property {string} owner e.g. "nebetoxyz"
+ * @property {string} repository e.g. "create-pull-request-action"
+ * @property {string} actor e.g. "fgruchala"
  * @property {object} source
- * @property {string} source.id e.g. 1
- * @property {string} source.type e.g. feat
- * @property {string} source.summary e.g. init
- * @property {string} source.branch e.g. feat/1-init
+ * @property {string} source.id e.g. "1"
+ * @property {string} source.type e.g. "feat"
+ * @property {string} source.summary e.g. "init"
+ * @property {string} source.branch e.g. "feat/1-init"
  */
 
 /**
@@ -84,17 +84,17 @@ export async function getAllPullRequests() {
 /**
  * Create a new {@link PullRequest}.
  * Restrict to the current {@link Context}.
- * @param {string} targetBranch Must be an existing branch e.g. main
- * @param {string} assignee Must be an existing Github user e.g. fgruchala
+ * @param {string} targetBranch Must be an existing branch e.g. "main"
+ * @param {string[]} assignees Must be existing Github users e.g. ["fgruchala"]
  * @param {boolean} isDraft e.g. true
  * @returns {Promise<PullRequest>}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const { id, url } = await createPullRequest('main', 'fgruchala', true);
+ * const { id, url } = await createPullRequest('main', ['fgruchala'], true);
  */
-export async function createPullRequest(targetBranch, assignee, isDraft) {
+export async function createPullRequest(targetBranch, assignees, isDraft) {
   const { owner, repository, actor, source } = _getContext();
 
   const labels = {
@@ -120,7 +120,7 @@ export async function createPullRequest(targetBranch, assignee, isDraft) {
   }
 
   const bodyTemplate = fs.readFileSync(
-    ".github/pull_request_template.md",
+    ".github/PULL_REQUEST_TEMPLATE.md",
     "utf-8"
   );
 
@@ -131,12 +131,10 @@ export async function createPullRequest(targetBranch, assignee, isDraft) {
       source.id === ""
         ? `${source.type}: ${source.summary}`
         : `${source.type}(#${source.id}): ${source.summary}`,
-    body: bodyTemplate
-      .replaceAll("{CREATOR}", `@${actor}`)
-      .replaceAll(
-        "{ISSUE_TICKET_ID}",
-        source.id === "" ? `NC` : `#${source.id}`
-      ),
+    body: bodyTemplate.replaceAll(
+      "{ISSUE_TICKET_ID}",
+      source.id === "" ? `NC` : `#${source.id}`
+    ),
     head: source.branch,
     target: targetBranch,
     draft: isDraft,
@@ -148,7 +146,7 @@ export async function createPullRequest(targetBranch, assignee, isDraft) {
     .then((res) => res.data);
 
   await Promise.all([
-    addAssigneesByPullRequestId(id, [assignee]),
+    addAssigneesByPullRequestId(id, assignees),
     addLabelsByPullRequestId(id, labels[source.type]),
   ]);
 
@@ -162,8 +160,8 @@ export async function createPullRequest(targetBranch, assignee, isDraft) {
 /**
  * Assign one or more {@link assignees} to a {@link PullRequest}.
  * Restrict to the current {@link Context}.
- * @param {number} id e.g. 1
- * @param {string[]} assignees Must be existing Github users e.g. [fgruchala]
+ * @param {number} id e.g. "1"
+ * @param {string[]} assignees Must be existing Github users e.g. ["fgruchala"]
  * @returns {Promise<any>}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
@@ -185,8 +183,8 @@ export function addAssigneesByPullRequestId(id, assignees) {
 /**
  * Assign one or more {@link labels} to a {@link PullRequest}.
  * Restrict to the current {@link Context}.
- * @param {number} id e.g. 1
- * @param {string[]} labels e.g. [bug]
+ * @param {number} id e.g. "1"
+ * @param {string[]} labels e.g. ["bug"]
  * @returns {Promise<any>}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
