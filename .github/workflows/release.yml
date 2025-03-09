@@ -25,7 +25,6 @@ jobs:
     name: Release
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
-      prs_created: ${{ steps.release.outputs.prs_created }}
       pr: ${{ steps.release.outputs.pr }}
       tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
@@ -39,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     needs: release
-    if: ${{ needs.release.outputs.prs_created }}
+    if: ${{ needs.release.outputs.pr != '' }}
     steps:
       - id: checkout-code
         uses: actions/checkout@v4
@@ -95,7 +94,7 @@ jobs:
             -Dsonar.projectVersion=${{ needs.release.outputs.tag_name }}
             -Dsonar.organization=${{ env.ORGANIZATION_ID }}
             -Dsonar.projectKey=${{ env.ORGANIZATION_ID }}_${{ env.PROJECT_ID }}
-            -Dsonar.projectDescription=${{ env.PROJECT_DESCRIPTION }}
+            -Dsonar.projectDescription="${{ env.PROJECT_DESCRIPTION }}"
             -Dsonar.links.ci=https://github.com/${{ env.ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/actions
             -Dsonar.links.homepage=https://github.com/marketplace/actions/${{ env.PROJECT_ID }}
             -Dsonar.links.issue=https://github.com/${{ env.ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/issues
