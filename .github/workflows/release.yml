@@ -15,8 +15,7 @@ permissions:
 
 env:
   NODE_VERSION: ${{ vars.NODE_VERSION }}
-  SONAR_ORGANIZATION_ID: ${{ vars.SONAR_ORGANIZATION_ID }}
-  GITHUB_ORGANIZATION_ID: ${{ github.repository_owner }}
+  ORGANIZATION_ID: ${{ github.repository_owner }}
   PROJECT_ID: ${{ vars.PROJECT_ID }}
   PROJECT_DESCRIPTION: ${{ vars.PROJECT_DESCRIPTION }}
 
@@ -73,10 +72,10 @@ jobs:
         with:
           args: >
             -Dsonar.projectVersion=${{ needs.release.outputs.tag_name }}
-            -Dsonar.organization=${{ env.SONAR_ORGANIZATION_ID }}
-            -Dsonar.projectKey=${{ env.SONAR_ORGANIZATION_ID }}_${{ env.PROJECT_ID }}
+            -Dsonar.organization=${{ env.ORGANIZATION_ID }}
+            -Dsonar.projectKey=${{ env.ORGANIZATION_ID }}_${{ env.PROJECT_ID }}
             -Dsonar.projectDescription=${{ env.PROJECT_DESCRIPTION }}
-            -Dsonar.links.ci=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/actions
+            -Dsonar.links.ci=https://github.com/${{ env.ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/actions
             -Dsonar.links.homepage=https://github.com/marketplace/actions/${{ env.PROJECT_ID }}
-            -Dsonar.links.issue=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/issues
-            -Dsonar.links.scm=https://github.com/${{ env.GITHUB_ORGANIZATION_ID }}/${{ env.PROJECT_ID }}
+            -Dsonar.links.issue=https://github.com/${{ env.ORGANIZATION_ID }}/${{ env.PROJECT_ID }}/issues
+            -Dsonar.links.scm=https://github.com/${{ env.ORGANIZATION_ID }}/${{ env.PROJECT_ID }}

@@ -17,7 +17,7 @@ import * as fs from "fs";
  * @property {string} repository e.g. "create-pull-request-action"
  * @property {string} actor e.g. "fgruchala"
  * @property {object} source
- * @property {string} source.id e.g. "1"
+ * @property {number} [source.id] e.g. "1"
  * @property {string} source.type e.g. "feat"
  * @property {string} source.summary e.g. "init"
  * @property {string} source.branch e.g. "feat/1-init"
@@ -30,7 +30,6 @@ import * as fs from "fs";
  */
 function _getContext() {
   const { owner, repo } = github.context.repo;
-  const actor = github.actor;
 
   const source = {
     branch: github.context.ref.replace("refs/heads/", ""),
@@ -44,9 +43,8 @@ function _getContext() {
   return {
     owner,
     repository: repo,
-    actor,
     source: {
-      id,
+      id: id === "" ? undefined : +id,
       type,
       summary,
       ...source,
@@ -95,7 +93,7 @@ export async function getAllPullRequests() {
  * const { id, url } = await createPullRequest('main', ['fgruchala'], true);
  */
 export async function createPullRequest(targetBranch, assignees, isDraft) {
-  const { owner, repository, actor, source } = _getContext();
+  const { owner, repository, source } = _getContext();
 
   const labels = {
     fix: ["bug"],
@@ -119,33 +117,28 @@ export async function createPullRequest(targetBranch, assignees, isDraft) {
     return existingPullRequest;
   }
 
-  const bodyTemplate = fs.readFileSync(
-    ".github/PULL_REQUEST_TEMPLATE.md",
-    "utf-8"
-  );
-
   const data = {
     owner,
     repo: repository,
-    title:
-      source.id === ""
-        ? `${source.type}: ${source.summary}`
-        : `${source.type}(#${source.id}): ${source.summary}`,
-    body: bodyTemplate.replaceAll(
-      "{ISSUE_TICKET_ID}",
-      source.id === "" ? `NC` : `#${source.id}`
-    ),
     head: source.branch,
     target: targetBranch,
     draft: isDraft,
     maintainer_can_modify: true,
   };
 
-  const { number: id, html_url: url } = await github.rest.pulls
-    .create(data)
-    .then((res) => res.data);
+  const comment = fs.readFileSync(".github/PULL_REQUEST_TEMPLATE.md", "utf-8");
+
+  if (source.id) {
+    data["issue"] = source.id;
+  } else {
+    data["title"] = `${source.type}: ${source.summary}`;
+    data["body"] = comment;
+  }
+
+  const { number: id, html_url: url } = await github.rest.pulls.create(data);
 
   await Promise.all([
+    source.id ? addCommentByPullRequestId(id, comment) : Promise.resolve(),
     addAssigneesByPullRequestId(id, assignees),
     addLabelsByPullRequestId(id, labels[source.type]),
   ]);
@@ -200,5 +193,28 @@ export function addLabelsByPullRequestId(id, labels) {
     repo: repository,
     issue_number: id,
     labels,
+  });
+}
+
+/**
+ * Add a {@link comment} to a {@link PullRequest}.
+ * Restrict to the current {@link Context}.
+ * @param {number} id e.g. "1"
+ * @param {string} comment
+ * @returns {Promise<any>}
+ *
+ * @author Francois GRUCHALA <francois@nebeto.xyz>
+ *
+ * @example
+ * await addCommentByPullRequestId(1, "...");
+ */
+export function addCommentByPullRequestId(id, comment) {
+  const { owner, repository } = _getContext();
+
+  return github.rest.issues.createComment({
+    owner,
+    repo: repository,
+    issue_number: id,
+    body: comment,
   });
 }

@@ -10,8 +10,6 @@ export const context = {
   ref: "",
 };
 
-export const actor = "";
-
 export const rest = {
   pulls: {
     list: jest.fn(),
