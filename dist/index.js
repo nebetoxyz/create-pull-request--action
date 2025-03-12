@@ -31260,7 +31260,7 @@ function getContext() {
   };
 
   const [type, ...issue] = source.branch.split("/");
-  const [id, summary] = /(\d*)-?([\w\-]*)/.exec(issue[0]).slice(1);
+  const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
     owner,
