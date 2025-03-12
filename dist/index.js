@@ -31260,7 +31260,7 @@ function getContext() {
   };
 
   const [type, ...issue] = source.branch.split("/");
-  const [id, summary] = issue[0].match(/(\d*)-?([\w\-_]*)/).slice(1);
+  const [id, summary] = /(\d*)-?([\w\-]*)/.exec(issue[0]).slice(1);
 
   return {
     owner,
@@ -31452,7 +31452,7 @@ function addCommentByPullRequestId(id, comment) {
 
 async function main() {
   const targetBranch = coreExports.getInput("to-branch");
-  const assignees = coreExports.getInput("assignees").split(/\r|\n/);
+  const assignees = coreExports.getInput("assignees").split(/[\r\n]/);
   const isDraft = coreExports.getBooleanInput("is-draft");
 
   try {
