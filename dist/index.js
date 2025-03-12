@@ -31231,15 +31231,6 @@ function requireGithub () {
 var githubExports = requireGithub();
 
 /**
- * @typedef PullRequest
- * @type {object}
- * @property {string} id e.g. "1"
- * @property {string} url e.g. "https://github.com/nebetoxyz/create-pull-request-action/pull/1"
- * @property {object} [source]
- * @property {string} source.branch e.g. "feat/1-init"
- */
-
-/**
  * @typedef Context
  * @type {object}
  * @property {string} owner e.g. "nebetoxyz"
@@ -31254,10 +31245,14 @@ var githubExports = requireGithub();
 
 /**
  * Get {@link Context}.
- * @private
  * @returns {Context}
+ *
+ * @author Francois GRUCHALA <francois@nebeto.xyz>
+ *
+ * @example
+ * const {owner, repository, source} = getContext();
  */
-function _getContext() {
+function getContext() {
   const { owner, repo } = githubExports.context.repo;
 
   const source = {
@@ -31280,6 +31275,15 @@ function _getContext() {
 }
 
 /**
+ * @typedef PullRequest
+ * @type {object}
+ * @property {string} id e.g. "1"
+ * @property {string} url e.g. "https://github.com/nebetoxyz/create-pull-request-action/pull/1"
+ * @property {object} [source]
+ * @property {string} source.branch e.g. "feat/1-init"
+ */
+
+/**
  * Get all {@link PullRequest}.
  * Restrict to the current {@link Context}.
  * @returns {Promise<PullRequest[]>}
@@ -31290,7 +31294,7 @@ function _getContext() {
  * const [{id, url, source}, ...] = await getAllPullRequests();
  */
 async function getAllPullRequests() {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   const pullRequests = await githubExports.paginate(githubExports.rest.pulls.list, {
     owner,
@@ -31320,7 +31324,7 @@ async function getAllPullRequests() {
  * const { id, url } = await createPullRequest('main', ['fgruchala'], true);
  */
 async function createPullRequest(targetBranch, assignees, isDraft) {
-  const { owner, repository, source } = _getContext();
+  const { owner, repository, source } = getContext();
 
   const labels = {
     fix: ["bug"],
@@ -31390,7 +31394,7 @@ async function createPullRequest(targetBranch, assignees, isDraft) {
  * await addAssigneesByPullRequestId(1, ['fgruchala']);
  */
 function addAssigneesByPullRequestId(id, assignees) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return githubExports.rest.issues.addAssignees({
     owner,
@@ -31413,7 +31417,7 @@ function addAssigneesByPullRequestId(id, assignees) {
  * await addLabelsByPullRequestId(1, ['bug']);
  */
 function addLabelsByPullRequestId(id, labels) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return githubExports.rest.issues.addLabels({
     owner,
@@ -31436,7 +31440,7 @@ function addLabelsByPullRequestId(id, labels) {
  * await addCommentByPullRequestId(1, "...");
  */
 function addCommentByPullRequestId(id, comment) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return githubExports.rest.issues.createComment({
     owner,
