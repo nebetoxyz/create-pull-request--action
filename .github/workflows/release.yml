@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - dist/**
 
 permissions:
   id-token: write
@@ -36,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     needs: release
-    if: ${{ needs.release.outputs.pr != '' && contains(join(fromJSON(needs.release.outputs.pr).files, '|'), 'src') }}
+    if: ${{ needs.release.outputs.pr != '' }}
     steps:
       - id: checkout-code
         uses: actions/checkout@v4
@@ -60,7 +62,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add ./dist/
-          git commit -m "build(main): release ${{ needs.release.outputs.version }}"
+          git commit --allow-empty -m "build(main): release ${{ needs.release.outputs.version }}"
           git push
   report-quality:
     runs-on: ubuntu-latest
