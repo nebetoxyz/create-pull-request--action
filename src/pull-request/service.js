@@ -1,6 +1,8 @@
 import * as github from "@actions/github";
 import * as fs from "fs";
 
+import { getContext } from "../context/service";
+
 /**
  * @typedef PullRequest
  * @type {object}
@@ -9,48 +11,6 @@ import * as fs from "fs";
  * @property {object} [source]
  * @property {string} source.branch e.g. "feat/1-init"
  */
-
-/**
- * @typedef Context
- * @type {object}
- * @property {string} owner e.g. "nebetoxyz"
- * @property {string} repository e.g. "create-pull-request-action"
- * @property {string} actor e.g. "fgruchala"
- * @property {object} source
- * @property {number} [source.id] e.g. "1"
- * @property {string} source.type e.g. "feat"
- * @property {string} source.summary e.g. "init"
- * @property {string} source.branch e.g. "feat/1-init"
- */
-
-/**
- * Get {@link Context}.
- * @private
- * @returns {Context}
- */
-function _getContext() {
-  const { owner, repo } = github.context.repo;
-
-  const source = {
-    branch: github.context.ref.replace("refs/heads/", ""),
-  };
-
-  const [type, ...issue] = source.branch.split("/");
-  const [id, summary] = issue[0].match(/(\d*)-?([\w\-_]*)/).slice(1);
-
-  source;
-
-  return {
-    owner,
-    repository: repo,
-    source: {
-      id: id === "" ? undefined : +id,
-      type,
-      summary,
-      ...source,
-    },
-  };
-}
 
 /**
  * Get all {@link PullRequest}.
@@ -63,7 +23,7 @@ function _getContext() {
  * const [{id, url, source}, ...] = await getAllPullRequests();
  */
 export async function getAllPullRequests() {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   const pullRequests = await github.paginate(github.rest.pulls.list, {
     owner,
@@ -93,7 +53,7 @@ export async function getAllPullRequests() {
  * const { id, url } = await createPullRequest('main', ['fgruchala'], true);
  */
 export async function createPullRequest(targetBranch, assignees, isDraft) {
-  const { owner, repository, source } = _getContext();
+  const { owner, repository, source } = getContext();
 
   const labels = {
     fix: ["bug"],
@@ -163,7 +123,7 @@ export async function createPullRequest(targetBranch, assignees, isDraft) {
  * await addAssigneesByPullRequestId(1, ['fgruchala']);
  */
 export function addAssigneesByPullRequestId(id, assignees) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return github.rest.issues.addAssignees({
     owner,
@@ -186,7 +146,7 @@ export function addAssigneesByPullRequestId(id, assignees) {
  * await addLabelsByPullRequestId(1, ['bug']);
  */
 export function addLabelsByPullRequestId(id, labels) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return github.rest.issues.addLabels({
     owner,
@@ -209,7 +169,7 @@ export function addLabelsByPullRequestId(id, labels) {
  * await addCommentByPullRequestId(1, "...");
  */
 export function addCommentByPullRequestId(id, comment) {
-  const { owner, repository } = _getContext();
+  const { owner, repository } = getContext();
 
   return github.rest.issues.createComment({
     owner,
