@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0](https://github.com/nebetoxyz/create-pull-request--action/compare/v1.5.0...v1.6.0) (2025-03-12)
+
+
+### Features
+
+* initial imports ([be22828](https://github.com/nebetoxyz/create-pull-request--action/commit/be228286e1288627e8d337ea59ff07f2ffd0d683))
+* initial imports ([a189876](https://github.com/nebetoxyz/create-pull-request--action/commit/a18987614b30b171df1172d0576a4d9b243bfe19))
+
 ## [1.5.0](https://github.com/nebetoxyz/create-pull-request--action/compare/v1.4.0...v1.5.0) (2025-03-09)
 
 
