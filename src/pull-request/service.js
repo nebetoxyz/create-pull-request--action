@@ -43,7 +43,7 @@ export async function getAllPullRequests() {
  * Create a new {@link PullRequest}.
  * Restrict to the current {@link Context}.
  * @param {string} targetBranch Must be an existing branch e.g. "main"
- * @param {string[]} assignees Must be existing Github users e.g. ["fgruchala"]
+ * @param {string[]=} assignees Must be existing Github users e.g. ["fgruchala"]
  * @param {boolean} isDraft e.g. true
  * @returns {Promise<PullRequest>}
  *
@@ -99,7 +99,7 @@ export async function createPullRequest(targetBranch, assignees, isDraft) {
 
   await Promise.all([
     source.id ? addCommentByPullRequestId(id, comment) : Promise.resolve(),
-    addAssigneesByPullRequestId(id, assignees),
+    assignees ? addAssigneesByPullRequestId(id, assignees) : Promise.resolve(),
     addLabelsByPullRequestId(id, labels[source.type]),
   ]);
 

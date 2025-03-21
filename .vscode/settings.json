@@ -5,7 +5,7 @@
         "source.fixAll": "always",
         "source.organizeImports": "always"
     },
-    "[json][javascript][markdown]": {
+    "[json][javascript][markdown][yaml]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
 }

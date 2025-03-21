@@ -12,13 +12,12 @@ inputs:
     required: false
     default: true
   to-branch:
-    description: Target branch, default to ${{ github.event.repository.default_branch }}
+    description: Target branch, default to main
     required: false
-    default: ${{ github.event.repository.default_branch }}
+    default: main
   assignees:
-    description: Assignee, default to ${{ github.actor }}
+    description: Assignees
     required: false
-    default: ${{ github.actor }}
 
 outputs:
   id:

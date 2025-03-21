@@ -11,35 +11,108 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
 ## Usage
 
 ```yaml
-- id: create-or-get-existing-pull-request
+- id: step-id
   uses: nebetoxyz/create-pull-request--action@v1
   with:
-    # Indicates whether the pull request is a draft.
+    # Indicates whether the Pull Request is a draft.
     # Default : true
     is-draft: true
 
     # The name of the branch you want the changes pulled into.
-    # This should be an existing branch on the current repository. You cannot submit a pull request to one repository that requests a merge to a base of another repository.
-    # Default : ${{ github.event.repository.default_branch }}
+    # This should be an existing branch on the current repository. You cannot submit a Pull Request to one repository that requests a merge to a base of another repository.
+    # Default : main
     to-branch: "main"
 
-    # Usernames of people to assign this issue to.
-    # Only users with push access can add assignees to an issue. Assignees are silently ignored otherwise.
-    # Default : ${{ github.actor }}
+    # Usernames of people to assign this Pull Request to.
     assignees: |-
       "fgruchala"
 ```
 
 You will have as outputs :
 
-- `${{ steps.create-or-get-existing-pull-request.outputs.id }}` : the unique ID of the Pull Request, given by Github e.g. **1** ;
-- `${{ steps.create-or-get-existing-pull-request.outputs.url }}` : the URL of the Pull Request, given by Github e.g. **https://github.com/.../pulls/1**
+- `${{ steps.step-id.outputs.id }}` : the unique ID of the Pull Request, given by Github e.g. **1** ;
+- `${{ steps.step-id.outputs.url }}` : the URL of the Pull Request, given by Github e.g. **https://github.com/.../pulls/1**
 
 ## Samples
 
 ### Create a draft Pull Request
 
+```yaml
+name: develop
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/**
+      - fix/**
+      - docs/**
+      - ci/**
+      - chore/**
+      - test/**
+      - perf/**
+      - refactor/**
+      - revert/**
+      - style/**
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    name: Create a draft Pull Request
+    steps:
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v4
+      - id: create-or-get-existing-pull-request
+        name: Create or get an existing Pull Request on Github
+        uses: nebetoxyz/create-pull-request--action@v1.11.0
+```
+
 ### Create a Pull Request with explicit assignees
+
+```yaml
+name: develop
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/**
+      - fix/**
+      - docs/**
+      - ci/**
+      - chore/**
+      - test/**
+      - perf/**
+      - refactor/**
+      - revert/**
+      - style/**
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    name: Create a Pull Request with explicit assignees
+    steps:
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v4
+      - id: create-or-get-existing-pull-request
+        name: Create or get an existing Pull Request on Github
+        uses: nebetoxyz/create-pull-request--action@v1.11.0
+        with:
+          is-draft: false
+          assignees: |-
+            ${{ github.actor }}
+            fgruchala
+```
 
 ## Contact
 
