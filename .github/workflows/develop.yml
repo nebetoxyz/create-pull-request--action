@@ -1,0 +1,111 @@
+name: Develop
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/**
+      - fix/**
+      - docs/**
+      - ci/**
+      - chore/**
+      - test/**
+      - perf/**
+      - refactor/**
+      - revert/**
+      - style/**
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  NODE_VERSION: ${{ vars.NODE_VERSION }}
+  ORGANIZATION_ID: ${{ github.repository_owner }}
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    name: Create a Pull Request
+    steps:
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - id: create-or-get-existing-draft-pull-request
+        name: Create or get an existing draft Pull Request on Github
+        uses: ./
+  check-quality:
+    runs-on: ubuntu-latest
+    name: Check Quality
+    needs: create-pull-request
+    steps:
+      - id: checkout-code
+        uses: actions/checkout@v4
+      - id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - id: setup-dependencies
+        name: Setup dependencies
+        run: npm install
+      - id: lint-code
+        name: Lint
+        run: npm run lint
+      - id: upload-reports
+        name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            reports/eslint/code-report.json
+            reports/eslint/tests-report.json
+  check-testing:
+    runs-on: ubuntu-latest
+    name: Check Testing
+    needs: create-pull-request
+    steps:
+      - id: checkout-code
+        uses: actions/checkout@v4
+      - id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - id: setup-dependencies
+        name: Setup dependencies
+        run: npm install
+      - id: test-code
+        name: Test
+        run: npm run test
+      - id: upload-reports
+        name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports/jest/lcov.info
+  report-quality:
+    runs-on: ubuntu-latest
+    name: Report Quality
+    needs: [check-quality, check-testing]
+    steps:
+      - id: checkout-code
+        uses: actions/checkout@v4
+      - id: download-reprots
+        name: Download Reports
+        uses: actions/download-artifact@v4
+        with:
+          name: reports
+      - id: report-quality-sonarqube
+        name: Report on SonarQube
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectVersion=${{ github.ref }}
+            -Dsonar.organization=${{ env.ORGANIZATION_ID }}
