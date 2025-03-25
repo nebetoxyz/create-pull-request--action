@@ -36,6 +36,8 @@ jobs:
       - id: create-or-get-existing-draft-pull-request
         name: Create or get an existing draft Pull Request on Github
         uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   check-quality:
     runs-on: ubuntu-latest
     name: Check Quality

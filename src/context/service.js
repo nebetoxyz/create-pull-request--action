@@ -16,14 +16,15 @@ import * as github from "@actions/github";
 
 /**
  * Get {@link Context}.
+ * @param {string} token
  * @returns {Context}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const {client, owner, repository, source} = getContext();
+ * const {client, owner, repository, source} = getContext("xxx");
  */
-export function getContext() {
+export function getContext(token) {
   const { owner, repo } = github.context.repo;
 
   const source = {
@@ -34,7 +35,7 @@ export function getContext() {
   const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
-    client: github.getOctokit(github.token),
+    client: github.getOctokit(token),
     owner,
     repository: repo,
     source: {

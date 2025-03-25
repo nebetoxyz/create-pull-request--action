@@ -14,6 +14,9 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
 - id: step-id
   uses: nebetoxyz/create-pull-request--action@vx.x.x
   with:
+    # A valid Github token.
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+
     # Indicates whether the Pull Request is a draft.
     # Default : true
     is-draft: true
@@ -24,7 +27,7 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
     to-branch: "main"
 
     # Usernames of people to assign this Pull Request to.
-    assignees: |-
+    assignees: |
       "fgruchala"
 ```
 
@@ -70,6 +73,8 @@ jobs:
       - id: create-or-get-existing-pull-request
         name: Create or get an existing Pull Request on Github
         uses: nebetoxyz/create-pull-request--action@v1.13.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Create a Pull Request with explicit assignees
@@ -108,6 +113,7 @@ jobs:
         name: Create or get an existing Pull Request on Github
         uses: nebetoxyz/create-pull-request--action@v1.13.0
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           is-draft: false
           assignees: |-
             ${{ github.actor }}
