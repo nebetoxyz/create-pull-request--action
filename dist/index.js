@@ -31233,6 +31233,7 @@ var githubExports = requireGithub();
 /**
  * @typedef Context
  * @type {object}
+ * @property {object} client
  * @property {string} owner e.g. "nebetoxyz"
  * @property {string} repository e.g. "create-pull-request-action"
  * @property {string} actor e.g. "fgruchala"
@@ -31250,7 +31251,7 @@ var githubExports = requireGithub();
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const {owner, repository, source} = getContext();
+ * const {client, owner, repository, source} = getContext();
  */
 function getContext() {
   const { owner, repo } = githubExports.context.repo;
@@ -31263,6 +31264,7 @@ function getContext() {
   const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
+    client: githubExports.getOctokit(githubExports.token),
     owner,
     repository: repo,
     source: {
@@ -31285,20 +31287,18 @@ function getContext() {
 
 /**
  * Get all {@link PullRequest}.
- * Restrict to the current {@link Context}.
+ * @param {Context} context
  * @returns {Promise<PullRequest[]>}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const [{id, url, source}, ...] = await getAllPullRequests();
+ * const [{id, url, source}, ...] = await getAllPullRequests(context);
  */
-async function getAllPullRequests() {
-  const { owner, repository } = getContext();
-
-  const pullRequests = await githubExports.paginate(githubExports.rest.pulls.list, {
-    owner,
-    repo: repository,
+async function getAllPullRequests(context) {
+  const pullRequests = await githubExports.paginate(context.client.rest.pulls.list, {
+    owner: context.owner,
+    repo: context.repository,
   });
 
   return pullRequests.map((pullRequest) => ({
@@ -31312,7 +31312,7 @@ async function getAllPullRequests() {
 
 /**
  * Create a new {@link PullRequest}.
- * Restrict to the current {@link Context}.
+ * @param {Context} context
  * @param {string} targetBranch Must be an existing branch e.g. "main"
  * @param {string[]=} assignees Must be existing Github users e.g. ["fgruchala"]
  * @param {boolean} isDraft e.g. true
@@ -31321,11 +31321,14 @@ async function getAllPullRequests() {
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const { id, url } = await createPullRequest('main', ['fgruchala'], true);
+ * const { id, url } = await createPullRequest(context, 'main', ['fgruchala'], true);
  */
-async function createPullRequest(targetBranch, assignees, isDraft) {
-  const { owner, repository, source } = getContext();
-
+async function createPullRequest(
+  context,
+  targetBranch,
+  assignees,
+  isDraft
+) {
   const labels = {
     fix: ["bug"],
     feat: ["enhancement"],
@@ -31339,9 +31342,9 @@ async function createPullRequest(targetBranch, assignees, isDraft) {
     style: ["enhancement", "enhancement:minor"],
   };
 
-  const pullRequests = await getAllPullRequests();
+  const pullRequests = await getAllPullRequests(context);
   const existingPullRequest = pullRequests.find(
-    (pullRequest) => pullRequest.source.branch === source.branch
+    (pullRequest) => pullRequest.source.branch === context.source.branch
   );
 
   if (existingPullRequest) {
@@ -31349,9 +31352,9 @@ async function createPullRequest(targetBranch, assignees, isDraft) {
   }
 
   const data = {
-    owner,
-    repo: repository,
-    head: source.branch,
+    owner: context.owner,
+    repo: context.repository,
+    head: context.source.branch,
     target: targetBranch,
     draft: isDraft,
     maintainer_can_modify: true,
@@ -31359,31 +31362,37 @@ async function createPullRequest(targetBranch, assignees, isDraft) {
 
   const comment = require$$1.readFileSync(".github/PULL_REQUEST_TEMPLATE.md", "utf-8");
 
-  if (source.id) {
-    data["issue"] = source.id;
+  if (context.source.id) {
+    data["issue"] = context.source.id;
   } else {
-    data["title"] = `${source.type}: ${source.summary}`;
+    data["title"] = `${context.source.type}: ${context.source.summary}`;
     data["body"] = comment;
   }
 
-  const { number: id, html_url: url } = await githubExports.rest.pulls.create(data);
+  const { number: id, html_url: url } = await context.client.rest.pulls.create(
+    data
+  );
 
   await Promise.all([
-    source.id ? addCommentByPullRequestId(id, comment) : Promise.resolve(),
-    assignees ? addAssigneesByPullRequestId(id, assignees) : Promise.resolve(),
-    addLabelsByPullRequestId(id, labels[source.type]),
+    context.source.id
+      ? addCommentByPullRequestId(context, id, comment)
+      : Promise.resolve(),
+    assignees && assignees.length > 0
+      ? addAssigneesByPullRequestId(context, id, assignees)
+      : Promise.resolve(),
+    addLabelsByPullRequestId(context, id, labels[context.source.type]),
   ]);
 
   return {
     id,
     url,
-    source,
+    source: context.source,
   };
 }
 
 /**
  * Assign one or more {@link assignees} to a {@link PullRequest}.
- * Restrict to the current {@link Context}.
+ * @param {Context} context
  * @param {number} id e.g. "1"
  * @param {string[]} assignees Must be existing Github users e.g. ["fgruchala"]
  * @returns {Promise<any>}
@@ -31391,14 +31400,12 @@ async function createPullRequest(targetBranch, assignees, isDraft) {
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * await addAssigneesByPullRequestId(1, ['fgruchala']);
+ * await addAssigneesByPullRequestId(context, 1, ['fgruchala']);
  */
-function addAssigneesByPullRequestId(id, assignees) {
-  const { owner, repository } = getContext();
-
-  return githubExports.rest.issues.addAssignees({
-    owner,
-    repo: repository,
+function addAssigneesByPullRequestId(context, id, assignees) {
+  return context.client.rest.issues.addAssignees({
+    owner: context.owner,
+    repo: context.repository,
     issue_number: id,
     assignees,
   });
@@ -31406,7 +31413,7 @@ function addAssigneesByPullRequestId(id, assignees) {
 
 /**
  * Assign one or more {@link labels} to a {@link PullRequest}.
- * Restrict to the current {@link Context}.
+ * @param {Context} context
  * @param {number} id e.g. "1"
  * @param {string[]} labels e.g. ["bug"]
  * @returns {Promise<any>}
@@ -31414,14 +31421,12 @@ function addAssigneesByPullRequestId(id, assignees) {
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * await addLabelsByPullRequestId(1, ['bug']);
+ * await addLabelsByPullRequestId(context, 1, ['bug']);
  */
-function addLabelsByPullRequestId(id, labels) {
-  const { owner, repository } = getContext();
-
-  return githubExports.rest.issues.addLabels({
-    owner,
-    repo: repository,
+function addLabelsByPullRequestId(context, id, labels) {
+  return context.client.rest.issues.addLabels({
+    owner: context.owner,
+    repo: context.repository,
     issue_number: id,
     labels,
   });
@@ -31429,7 +31434,7 @@ function addLabelsByPullRequestId(id, labels) {
 
 /**
  * Add a {@link comment} to a {@link PullRequest}.
- * Restrict to the current {@link Context}.
+ * @param {Context} context
  * @param {number} id e.g. "1"
  * @param {string} comment
  * @returns {Promise<any>}
@@ -31437,14 +31442,12 @@ function addLabelsByPullRequestId(id, labels) {
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * await addCommentByPullRequestId(1, "...");
+ * await addCommentByPullRequestId(context, 1, "...");
  */
-function addCommentByPullRequestId(id, comment) {
-  const { owner, repository } = getContext();
-
-  return githubExports.rest.issues.createComment({
-    owner,
-    repo: repository,
+function addCommentByPullRequestId(context, id, comment) {
+  return context.client.rest.issues.createComment({
+    owner: context.owner,
+    repo: context.repository,
     issue_number: id,
     body: comment,
   });
@@ -31456,7 +31459,9 @@ async function main() {
   const isDraft = coreExports.getBooleanInput("is-draft");
 
   try {
+    const context = getContext();
     const { id, url } = await createPullRequest(
+      context,
       targetBranch,
       assignees,
       isDraft
