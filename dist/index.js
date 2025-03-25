@@ -31246,14 +31246,15 @@ var githubExports = requireGithub();
 
 /**
  * Get {@link Context}.
+ * @param {string} token
  * @returns {Context}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const {client, owner, repository, source} = getContext();
+ * const {client, owner, repository, source} = getContext("xxx");
  */
-function getContext() {
+function getContext(token) {
   const { owner, repo } = githubExports.context.repo;
 
   const source = {
@@ -31264,7 +31265,7 @@ function getContext() {
   const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
-    client: githubExports.getOctokit(githubExports.token),
+    client: githubExports.getOctokit(token),
     owner,
     repository: repo,
     source: {
@@ -31454,12 +31455,13 @@ function addCommentByPullRequestId(context, id, comment) {
 }
 
 async function main() {
+  const token = coreExports.getInput("github-token");
   const targetBranch = coreExports.getInput("to-branch");
   const assignees = coreExports.getInput("assignees").split(/[\r\n]/);
   const isDraft = coreExports.getBooleanInput("is-draft");
 
   try {
-    const context = getContext();
+    const context = getContext(token);
     const { id, url } = await createPullRequest(
       context,
       targetBranch,
