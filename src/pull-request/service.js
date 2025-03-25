@@ -82,7 +82,7 @@ export async function createPullRequest(
     owner: context.owner,
     repo: context.repository,
     head: context.source.branch,
-    target: targetBranch,
+    base: targetBranch,
     draft: isDraft,
     maintainer_can_modify: true,
   };

@@ -157,7 +157,7 @@ describe("Default", () => {
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       head: "feat/1-test",
-      target: "main",
+      base: "main",
       draft: true,
       maintainer_can_modify: true,
       issue: 1,
@@ -226,7 +226,7 @@ describe("Default", () => {
       title: "feat: test",
       body: "test",
       head: "feat/test",
-      target: "master",
+      base: "master",
       draft: false,
       maintainer_can_modify: true,
     });
@@ -287,7 +287,7 @@ describe("Default", () => {
       title: "feat: test",
       body: "test",
       head: "feat/test",
-      target: "master",
+      base: "master",
       draft: false,
       maintainer_can_modify: true,
     });
