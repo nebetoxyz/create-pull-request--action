@@ -31297,10 +31297,13 @@ function getContext(token) {
  * const [{id, url, source}, ...] = await getAllPullRequests(context);
  */
 async function getAllPullRequests(context) {
-  const pullRequests = await githubExports.paginate(context.client.rest.pulls.list, {
-    owner: context.owner,
-    repo: context.repository,
-  });
+  const pullRequests = await context.client.paginate(
+    context.client.rest.pulls.list,
+    {
+      owner: context.owner,
+      repo: context.repository,
+    }
+  );
 
   return pullRequests.map((pullRequest) => ({
     id: pullRequest.number,
