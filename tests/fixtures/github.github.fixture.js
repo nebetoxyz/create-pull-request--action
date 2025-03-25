@@ -1,8 +1,7 @@
 import { jest } from "@jest/globals";
 
-export const paginate = jest.fn();
-
 export const getOctokit = jest.fn((token) => ({
+  paginate: jest.fn(),
   rest: {
     pulls: {
       list: jest.fn(),

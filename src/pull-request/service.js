@@ -1,4 +1,3 @@
-import * as github from "@actions/github";
 import * as fs from "fs";
 
 /**
@@ -21,10 +20,13 @@ import * as fs from "fs";
  * const [{id, url, source}, ...] = await getAllPullRequests(context);
  */
 export async function getAllPullRequests(context) {
-  const pullRequests = await github.paginate(context.client.rest.pulls.list, {
-    owner: context.owner,
-    repo: context.repository,
-  });
+  const pullRequests = await context.client.paginate(
+    context.client.rest.pulls.list,
+    {
+      owner: context.owner,
+      repo: context.repository,
+    }
+  );
 
   return pullRequests.map((pullRequest) => ({
     id: pullRequest.number,

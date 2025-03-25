@@ -23,8 +23,7 @@ describe("Default", () => {
     };
 
     context.client.rest.pulls.list.mockImplementation(() => []);
-
-    github.paginate.mockImplementation(() => [
+    context.client.paginate.mockImplementation(() => [
       {
         number: 1,
         html_url:
@@ -37,8 +36,8 @@ describe("Default", () => {
 
     const pullRequests = await getAllPullRequests(context);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -132,8 +131,7 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
       number: 1,
@@ -146,8 +144,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "main", ["fgruchala"], true);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -201,8 +199,7 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
       number: 1,
@@ -214,8 +211,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "master", ["fgruchala"], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -264,8 +261,7 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
       number: 1,
@@ -276,8 +272,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "master", [], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -319,8 +315,7 @@ describe("Default", () => {
     };
 
     context.client.rest.pulls.list.mockImplementation(() => []);
-
-    github.paginate.mockImplementation(() => [
+    context.client.paginate.mockImplementation(() => [
       {
         number: 1,
         html_url:
@@ -333,8 +328,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "master", ["fgruchala"], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
