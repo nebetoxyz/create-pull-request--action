@@ -3,11 +3,15 @@ import { expect, jest } from "@jest/globals";
 import * as core from "./fixtures/github.core.fixture.js";
 
 jest.unstable_mockModule("@actions/core", () => core);
+jest.unstable_mockModule("../src/context/service", () => ({
+  getContext: jest.fn(),
+}));
 jest.unstable_mockModule("../src/pull-request/service", () => ({
   createPullRequest: jest.fn(),
 }));
 
 const { main } = await import("../src/main.js");
+const { getContext } = await import("../src/context/service.js");
 const { createPullRequest } = await import("../src/pull-request/service.js");
 
 describe("Default", () => {
@@ -27,6 +31,10 @@ describe("Default", () => {
   });
 
   it("Should create a Pull Request", async () => {
+    getContext.mockImplementation(() => ({
+      client: {},
+    }));
+
     createPullRequest.mockImplementation(() => ({
       id: 1,
       url: "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
@@ -41,8 +49,11 @@ describe("Default", () => {
     expect(core.getBooleanInput).toHaveBeenCalledTimes(1);
     expect(core.getBooleanInput).toHaveBeenCalledWith("is-draft");
 
+    expect(getContext).toHaveBeenCalledTimes(1);
+
     expect(createPullRequest).toHaveBeenCalledTimes(1);
     expect(createPullRequest).toHaveBeenCalledWith(
+      { client: {} },
       "main",
       ["fgruchala", "test"],
       true
@@ -57,6 +68,10 @@ describe("Default", () => {
   });
 
   it("Should failed", async () => {
+    getContext.mockImplementation(() => ({
+      client: {},
+    }));
+
     createPullRequest.mockImplementation(() => {
       throw new Error("Something went wrong");
     });
@@ -72,6 +87,7 @@ describe("Default", () => {
 
     expect(createPullRequest).toHaveBeenCalledTimes(1);
     expect(createPullRequest).toHaveBeenCalledWith(
+      { client: {} },
       "main",
       ["fgruchala", "test"],
       true

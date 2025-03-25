@@ -12,7 +12,7 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
 
 ```yaml
 - id: step-id
-  uses: nebetoxyz/create-pull-request--action@v1
+  uses: nebetoxyz/create-pull-request--action@vx.x.x
   with:
     # Indicates whether the Pull Request is a draft.
     # Default : true
@@ -69,7 +69,7 @@ jobs:
         uses: actions/checkout@v4
       - id: create-or-get-existing-pull-request
         name: Create or get an existing Pull Request on Github
-        uses: nebetoxyz/create-pull-request--action@v1.11.0
+        uses: nebetoxyz/create-pull-request--action@v1.13.0
 ```
 
 ### Create a Pull Request with explicit assignees
@@ -106,7 +106,7 @@ jobs:
         uses: actions/checkout@v4
       - id: create-or-get-existing-pull-request
         name: Create or get an existing Pull Request on Github
-        uses: nebetoxyz/create-pull-request--action@v1.11.0
+        uses: nebetoxyz/create-pull-request--action@v1.13.0
         with:
           is-draft: false
           assignees: |-

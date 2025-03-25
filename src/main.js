@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 
+import { getContext } from "./context/service";
 import { createPullRequest } from "./pull-request/service";
 
 export async function main() {
@@ -8,7 +9,9 @@ export async function main() {
   const isDraft = core.getBooleanInput("is-draft");
 
   try {
+    const context = getContext();
     const { id, url } = await createPullRequest(
+      context,
       targetBranch,
       assignees,
       isDraft

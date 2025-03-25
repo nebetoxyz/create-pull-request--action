@@ -3,6 +3,7 @@ import * as github from "@actions/github";
 /**
  * @typedef Context
  * @type {object}
+ * @property {object} client
  * @property {string} owner e.g. "nebetoxyz"
  * @property {string} repository e.g. "create-pull-request-action"
  * @property {string} actor e.g. "fgruchala"
@@ -20,7 +21,7 @@ import * as github from "@actions/github";
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const {owner, repository, source} = getContext();
+ * const {client, owner, repository, source} = getContext();
  */
 export function getContext() {
   const { owner, repo } = github.context.repo;
@@ -33,6 +34,7 @@ export function getContext() {
   const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
+    client: github.getOctokit(github.token),
     owner,
     repository: repo,
     source: {

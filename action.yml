@@ -7,6 +7,9 @@ branding:
   color: black
 
 inputs:
+  github-token:
+    description: a Github token
+    required: true
   is-draft:
     description: Flag the Pull Request as a draft or not, default to true
     required: false

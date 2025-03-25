@@ -15,19 +15,15 @@ const {
 } = await import("../src/pull-request/service.js");
 
 describe("Default", () => {
-  beforeEach(() => {
-    github.context.repo.owner = "nebetoxyz";
-    github.context.repo.repo = "create-pull-request--action";
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   it("Should list existing Pull Requests", async () => {
-    github.context.ref = "refs/heads/feat/1-test";
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+    };
 
-    github.rest.pulls.list.mockImplementation(() => []);
+    context.client.rest.pulls.list.mockImplementation(() => []);
+
     github.paginate.mockImplementation(() => [
       {
         number: 1,
@@ -39,13 +35,16 @@ describe("Default", () => {
       },
     ]);
 
-    const pullRequests = await getAllPullRequests();
+    const pullRequests = await getAllPullRequests(context);
 
     expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(github.rest.pulls.list, {
-      owner: "nebetoxyz",
-      repo: "create-pull-request--action",
-    });
+    expect(github.paginate).toHaveBeenCalledWith(
+      context.client.rest.pulls.list,
+      {
+        owner: "nebetoxyz",
+        repo: "create-pull-request--action",
+      }
+    );
 
     expect(pullRequests).toStrictEqual([
       {
@@ -59,12 +58,18 @@ describe("Default", () => {
   });
 
   it("Should add assignees to a Pull Request", async () => {
-    github.rest.issues.addAssignees.mockImplementation(() => []);
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+    };
 
-    await addAssigneesByPullRequestId(1, ["fgruchala"]);
+    context.client.rest.issues.addAssignees.mockImplementation(() => []);
 
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledWith({
+    await addAssigneesByPullRequestId(context, 1, ["fgruchala"]);
+
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
@@ -73,12 +78,18 @@ describe("Default", () => {
   });
 
   it("Should add labels to a Pull Request", async () => {
-    github.rest.issues.addLabels.mockImplementation(() => []);
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+    };
 
-    await addLabelsByPullRequestId(1, ["bug"]);
+    context.client.rest.issues.addLabels.mockImplementation(() => []);
 
-    expect(github.rest.issues.addLabels).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addLabels).toHaveBeenCalledWith({
+    await addLabelsByPullRequestId(context, 1, ["bug"]);
+
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
@@ -87,12 +98,18 @@ describe("Default", () => {
   });
 
   it("Should create a comment to a Pull Request", async () => {
-    github.rest.issues.createComment.mockImplementation(() => ({}));
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+    };
 
-    await addCommentByPullRequestId(1, "test");
+    context.client.rest.issues.createComment.mockImplementation(() => ({}));
 
-    expect(github.rest.issues.createComment).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.createComment).toHaveBeenCalledWith({
+    await addCommentByPullRequestId(context, 1, "test");
+
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
@@ -101,30 +118,44 @@ describe("Default", () => {
   });
 
   it("Should create a Pull Request from an Issue", async () => {
-    github.context.ref = "refs/heads/feat/1-test";
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+      source: {
+        id: 1,
+        type: "feat",
+        summary: "test",
+        branch: "feat/1-test",
+      },
+    };
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.rest.pulls.list.mockImplementation(() => []);
     github.paginate.mockImplementation(() => []);
-    github.rest.pulls.create.mockImplementation(() => ({
+
+    context.client.rest.pulls.list.mockImplementation(() => []);
+    context.client.rest.pulls.create.mockImplementation(() => ({
       number: 1,
       html_url:
         "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
     }));
-    github.rest.issues.addLabels.mockImplementation(() => []);
-    github.rest.issues.addAssignees.mockImplementation(() => []);
-    github.rest.issues.createComment.mockImplementation(() => ({}));
+    context.client.rest.issues.addLabels.mockImplementation(() => []);
+    context.client.rest.issues.addAssignees.mockImplementation(() => []);
+    context.client.rest.issues.createComment.mockImplementation(() => ({}));
 
-    await createPullRequest("main", ["fgruchala"], true);
+    await createPullRequest(context, "main", ["fgruchala"], true);
 
     expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(github.rest.pulls.list, {
-      owner: "nebetoxyz",
-      repo: "create-pull-request--action",
-    });
-    expect(github.rest.pulls.create).toHaveBeenCalledTimes(1);
-    expect(github.rest.pulls.create).toHaveBeenCalledWith({
+    expect(github.paginate).toHaveBeenCalledWith(
+      context.client.rest.pulls.list,
+      {
+        owner: "nebetoxyz",
+        repo: "create-pull-request--action",
+      }
+    );
+    expect(context.client.rest.pulls.create).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.pulls.create).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       head: "feat/1-test",
@@ -133,22 +164,22 @@ describe("Default", () => {
       maintainer_can_modify: true,
       issue: 1,
     });
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledWith({
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
       assignees: ["fgruchala"],
     });
-    expect(github.rest.issues.addLabels).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addLabels).toHaveBeenCalledWith({
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
       labels: ["enhancement"],
     });
-    expect(github.rest.issues.createComment).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.createComment).toHaveBeenCalledWith({
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
@@ -157,29 +188,42 @@ describe("Default", () => {
   });
 
   it("Should create a Pull Request", async () => {
-    github.context.ref = "refs/heads/feat/test";
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+      source: {
+        type: "feat",
+        summary: "test",
+        branch: "feat/test",
+      },
+    };
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.rest.pulls.list.mockImplementation(() => []);
     github.paginate.mockImplementation(() => []);
-    github.rest.pulls.create.mockImplementation(() => ({
+
+    context.client.rest.pulls.list.mockImplementation(() => []);
+    context.client.rest.pulls.create.mockImplementation(() => ({
       number: 1,
       html_url:
         "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
     }));
-    github.rest.issues.addLabels.mockImplementation(() => []);
-    github.rest.issues.addAssignees.mockImplementation(() => []);
+    context.client.rest.issues.addLabels.mockImplementation(() => []);
+    context.client.rest.issues.addAssignees.mockImplementation(() => []);
 
-    await createPullRequest("master", ["fgruchala"], false);
+    await createPullRequest(context, "master", ["fgruchala"], false);
 
     expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(github.rest.pulls.list, {
-      owner: "nebetoxyz",
-      repo: "create-pull-request--action",
-    });
-    expect(github.rest.pulls.create).toHaveBeenCalledTimes(1);
-    expect(github.rest.pulls.create).toHaveBeenCalledWith({
+    expect(github.paginate).toHaveBeenCalledWith(
+      context.client.rest.pulls.list,
+      {
+        owner: "nebetoxyz",
+        repo: "create-pull-request--action",
+      }
+    );
+    expect(context.client.rest.pulls.create).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.pulls.create).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       title: "feat: test",
@@ -189,27 +233,93 @@ describe("Default", () => {
       draft: false,
       maintainer_can_modify: true,
     });
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledWith({
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
       assignees: ["fgruchala"],
     });
-    expect(github.rest.issues.addLabels).toHaveBeenCalledTimes(1);
-    expect(github.rest.issues.addLabels).toHaveBeenCalledWith({
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledWith({
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       issue_number: 1,
       labels: ["enhancement"],
     });
-    expect(github.rest.issues.createComment).toHaveBeenCalledTimes(0);
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledTimes(0);
+  });
+
+  it("Should create a Pull Request without assignees", async () => {
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+      source: {
+        type: "feat",
+        summary: "test",
+        branch: "feat/test",
+      },
+    };
+
+    fs.readFileSync.mockImplementation(() => "test");
+
+    github.paginate.mockImplementation(() => []);
+
+    context.client.rest.pulls.list.mockImplementation(() => []);
+    context.client.rest.pulls.create.mockImplementation(() => ({
+      number: 1,
+      html_url:
+        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+    }));
+    context.client.rest.issues.addLabels.mockImplementation(() => []);
+
+    await createPullRequest(context, "master", [], false);
+
+    expect(github.paginate).toHaveBeenCalledTimes(1);
+    expect(github.paginate).toHaveBeenCalledWith(
+      context.client.rest.pulls.list,
+      {
+        owner: "nebetoxyz",
+        repo: "create-pull-request--action",
+      }
+    );
+    expect(context.client.rest.pulls.create).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.pulls.create).toHaveBeenCalledWith({
+      owner: "nebetoxyz",
+      repo: "create-pull-request--action",
+      title: "feat: test",
+      body: "test",
+      head: "feat/test",
+      target: "master",
+      draft: false,
+      maintainer_can_modify: true,
+    });
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledTimes(1);
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledWith({
+      owner: "nebetoxyz",
+      repo: "create-pull-request--action",
+      issue_number: 1,
+      labels: ["enhancement"],
+    });
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledTimes(0);
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledTimes(0);
   });
 
   it("Should not create a Pull Request because already existing", async () => {
-    github.context.ref = "refs/heads/feat/test";
+    const context = {
+      client: github.getOctokit("***"),
+      owner: "nebetoxyz",
+      repository: "create-pull-request--action",
+      source: {
+        type: "feat",
+        summary: "test",
+        branch: "feat/test",
+      },
+    };
 
-    github.rest.pulls.list.mockImplementation(() => []);
+    context.client.rest.pulls.list.mockImplementation(() => []);
+
     github.paginate.mockImplementation(() => [
       {
         number: 1,
@@ -221,16 +331,19 @@ describe("Default", () => {
       },
     ]);
 
-    await createPullRequest("master", ["fgruchala"], false);
+    await createPullRequest(context, "master", ["fgruchala"], false);
 
     expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(github.rest.pulls.list, {
-      owner: "nebetoxyz",
-      repo: "create-pull-request--action",
-    });
-    expect(github.rest.pulls.create).toHaveBeenCalledTimes(0);
-    expect(github.rest.issues.addAssignees).toHaveBeenCalledTimes(0);
-    expect(github.rest.issues.addLabels).toHaveBeenCalledTimes(0);
-    expect(github.rest.issues.createComment).toHaveBeenCalledTimes(0);
+    expect(github.paginate).toHaveBeenCalledWith(
+      context.client.rest.pulls.list,
+      {
+        owner: "nebetoxyz",
+        repo: "create-pull-request--action",
+      }
+    );
+    expect(context.client.rest.pulls.create).toHaveBeenCalledTimes(0);
+    expect(context.client.rest.issues.addAssignees).toHaveBeenCalledTimes(0);
+    expect(context.client.rest.issues.addLabels).toHaveBeenCalledTimes(0);
+    expect(context.client.rest.issues.createComment).toHaveBeenCalledTimes(0);
   });
 });

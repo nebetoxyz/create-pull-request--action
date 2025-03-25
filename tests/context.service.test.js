@@ -12,19 +12,35 @@ describe("Default", () => {
     github.context.repo.repo = "create-pull-request--action";
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it("Should get context", async () => {
+  it("Should get context with an Issue", async () => {
     github.context.ref = "refs/heads/feat/1-test";
 
     const context = getContext();
 
-    expect(context).toStrictEqual({
-      owner: "nebetoxyz",
-      repository: "create-pull-request--action",
-      source: { branch: "feat/1-test", id: 1, summary: "test", type: "feat" },
+    expect(context.client).toBeDefined();
+    expect(context.owner).toStrictEqual("nebetoxyz");
+    expect(context.repository).toStrictEqual("create-pull-request--action");
+    expect(context.source).toStrictEqual({
+      branch: "feat/1-test",
+      id: 1,
+      summary: "test",
+      type: "feat",
+    });
+  });
+
+  it("Should get context without an Issue", async () => {
+    github.context.ref = "refs/heads/feat/test";
+
+    const context = getContext();
+
+    expect(context.client).toBeDefined();
+    expect(context.owner).toStrictEqual("nebetoxyz");
+    expect(context.repository).toStrictEqual("create-pull-request--action");
+    expect(context.source).toStrictEqual({
+      branch: "feat/test",
+      id: undefined,
+      summary: "test",
+      type: "feat",
     });
   });
 });
