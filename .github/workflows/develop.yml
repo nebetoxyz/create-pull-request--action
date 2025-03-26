@@ -30,7 +30,7 @@ jobs:
     steps:
       - id: checkout-code
         name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           ref: ${{ github.ref }}
       - id: create-or-get-existing-draft-pull-request
@@ -45,9 +45,9 @@ jobs:
     needs: create-pull-request
     steps:
       - id: checkout-code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - id: setup-node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.3.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -60,7 +60,7 @@ jobs:
         run: npm run lint
       - id: upload-reports
         name: Upload Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: reports-check-quality
           path: |
@@ -72,9 +72,9 @@ jobs:
     needs: create-pull-request
     steps:
       - id: checkout-code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - id: setup-node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.3.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -87,7 +87,7 @@ jobs:
         run: npm run test
       - id: upload-reports
         name: Upload Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: reports-check-testing
           path: lcov.info
@@ -97,16 +97,16 @@ jobs:
     needs: [check-quality, check-testing]
     steps:
       - id: checkout-code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - id: download-reports
         name: Download Reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.2.1
         with:
           pattern: reports-*
           merge-multiple: true
       - id: report-quality-sonarqube
         name: Report on SonarQube
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v5.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:

@@ -28,7 +28,7 @@ jobs:
     steps:
       - id: release
         name: Release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v4.2.0
         with:
           release-type: node
   report:
@@ -38,9 +38,9 @@ jobs:
     if: ${{ needs.release.outputs.release_created }}
     steps:
       - id: checkout-code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - id: setup-node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.3.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -55,7 +55,7 @@ jobs:
           npm run test
       - id: report-quality-sonarqube
         name: Report on SonarQube
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v5.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
