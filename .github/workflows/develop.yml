@@ -61,7 +61,7 @@ jobs:
         name: Upload Reports
         uses: actions/upload-artifact@v4
         with:
-          name: reports
+          name: reports-check-quality
           path: |
             reports/eslint/code-report.json
             reports/eslint/tests-report.json
@@ -88,7 +88,7 @@ jobs:
         name: Upload Reports
         uses: actions/upload-artifact@v4
         with:
-          name: reports
+          name: reports-check-testing
           path: reports/jest/lcov.info
   report-quality:
     runs-on: ubuntu-latest
@@ -97,11 +97,12 @@ jobs:
     steps:
       - id: checkout-code
         uses: actions/checkout@v4
-      - id: download-reprots
+      - id: download-reports
         name: Download Reports
         uses: actions/download-artifact@v4
         with:
-          name: reports
+          pattern: reports-*
+          merge-multiple: true
       - id: report-quality-sonarqube
         name: Report on SonarQube
         uses: SonarSource/sonarqube-scan-action@v5
