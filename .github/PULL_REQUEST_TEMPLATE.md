@@ -1,5 +1,3 @@
-# Gentle Reminder
-
 - [ ] I have performed a self-review of my code ;
 - [ ] I have updated all dependencies, to keep up to date and secure our product ;
 - [ ] I have checked [SonarQube](https://sonarcloud.io/project/overview?id=nebetoxyz_create-pull-request-action) ;
