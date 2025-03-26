@@ -15,7 +15,7 @@ describe("Default", () => {
   it("Should get context with an Issue", async () => {
     github.context.ref = "refs/heads/feat/1-test";
 
-    const context = getContext();
+    const context = getContext("****");
 
     expect(context.client).toBeDefined();
     expect(context.owner).toStrictEqual("nebetoxyz");
@@ -31,7 +31,7 @@ describe("Default", () => {
   it("Should get context without an Issue", async () => {
     github.context.ref = "refs/heads/feat/test";
 
-    const context = getContext();
+    const context = getContext("****");
 
     expect(context.client).toBeDefined();
     expect(context.owner).toStrictEqual("nebetoxyz");

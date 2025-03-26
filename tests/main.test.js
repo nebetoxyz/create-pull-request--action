@@ -17,6 +17,7 @@ const { createPullRequest } = await import("../src/pull-request/service.js");
 describe("Default", () => {
   beforeEach(() => {
     const input = {
+      "github-token": "****",
       "to-branch": "main",
       assignees: "fgruchala\ntest",
       "is-draft": true,
@@ -24,10 +25,6 @@ describe("Default", () => {
 
     core.getInput.mockImplementation((id) => input[id]);
     core.getBooleanInput.mockImplementation((id) => input[id]);
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
   });
 
   it("Should create a Pull Request", async () => {
@@ -42,7 +39,8 @@ describe("Default", () => {
 
     await main();
 
-    expect(core.getInput).toHaveBeenCalledTimes(2);
+    expect(core.getInput).toHaveBeenCalledTimes(3);
+    expect(core.getInput).toHaveBeenCalledWith("github-token");
     expect(core.getInput).toHaveBeenCalledWith("to-branch");
     expect(core.getInput).toHaveBeenCalledWith("assignees");
 
@@ -50,6 +48,7 @@ describe("Default", () => {
     expect(core.getBooleanInput).toHaveBeenCalledWith("is-draft");
 
     expect(getContext).toHaveBeenCalledTimes(1);
+    expect(getContext).toHaveBeenCalledWith("****");
 
     expect(createPullRequest).toHaveBeenCalledTimes(1);
     expect(createPullRequest).toHaveBeenCalledWith(
@@ -78,12 +77,16 @@ describe("Default", () => {
 
     await main();
 
-    expect(core.getInput).toHaveBeenCalledTimes(2);
+    expect(core.getInput).toHaveBeenCalledTimes(3);
+    expect(core.getInput).toHaveBeenCalledWith("github-token");
     expect(core.getInput).toHaveBeenCalledWith("to-branch");
     expect(core.getInput).toHaveBeenCalledWith("assignees");
 
     expect(core.getBooleanInput).toHaveBeenCalledTimes(1);
     expect(core.getBooleanInput).toHaveBeenCalledWith("is-draft");
+
+    expect(getContext).toHaveBeenCalledTimes(1);
+    expect(getContext).toHaveBeenCalledWith("****");
 
     expect(createPullRequest).toHaveBeenCalledTimes(1);
     expect(createPullRequest).toHaveBeenCalledWith(

@@ -1,4 +1,3 @@
-import * as github from "@actions/github";
 import * as fs from "fs";
 
 /**
@@ -21,10 +20,13 @@ import * as fs from "fs";
  * const [{id, url, source}, ...] = await getAllPullRequests(context);
  */
 export async function getAllPullRequests(context) {
-  const pullRequests = await github.paginate(context.client.rest.pulls.list, {
-    owner: context.owner,
-    repo: context.repository,
-  });
+  const pullRequests = await context.client.paginate(
+    context.client.rest.pulls.list,
+    {
+      owner: context.owner,
+      repo: context.repository,
+    }
+  );
 
   return pullRequests.map((pullRequest) => ({
     id: pullRequest.number,
@@ -80,7 +82,7 @@ export async function createPullRequest(
     owner: context.owner,
     repo: context.repository,
     head: context.source.branch,
-    target: targetBranch,
+    base: targetBranch,
     draft: isDraft,
     maintainer_can_modify: true,
   };
@@ -94,9 +96,9 @@ export async function createPullRequest(
     data["body"] = comment;
   }
 
-  const { number: id, html_url: url } = await context.client.rest.pulls.create(
-    data
-  );
+  const { number: id, html_url: url } = (
+    await context.client.rest.pulls.create(data)
+  ).data;
 
   await Promise.all([
     context.source.id

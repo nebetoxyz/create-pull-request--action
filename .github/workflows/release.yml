@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - dist/**
 
 permissions:
   id-token: write
@@ -33,39 +31,9 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: node
-  build:
+  report:
     runs-on: ubuntu-latest
-    name: Build
-    needs: release
-    if: ${{ needs.release.outputs.pr != '' }}
-    steps:
-      - id: checkout-code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ fromJSON(needs.release.outputs.pr).headBranchName }}
-      - id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - id: setup-dependencies
-        name: Setup dependencies
-        run: npm install
-      - id: build-code
-        name: Build
-        run: npm run build
-      - id: upload-artifact
-        name: Upload Artifact
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add ./dist/
-          git commit --allow-empty -m "build(main): release ${{ needs.release.outputs.version }}"
-          git push
-  report-quality:
-    runs-on: ubuntu-latest
-    name: Report Quality
+    name: Report
     needs: release
     if: ${{ needs.release.outputs.release_created }}
     steps:
@@ -90,7 +58,6 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_ID:
         with:
           args: >
             -Dsonar.projectVersion=${{ needs.release.outputs.tag_name }}

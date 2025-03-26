@@ -23,8 +23,7 @@ describe("Default", () => {
     };
 
     context.client.rest.pulls.list.mockImplementation(() => []);
-
-    github.paginate.mockImplementation(() => [
+    context.client.paginate.mockImplementation(() => [
       {
         number: 1,
         html_url:
@@ -37,8 +36,8 @@ describe("Default", () => {
 
     const pullRequests = await getAllPullRequests(context);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -132,13 +131,14 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
     context.client.rest.issues.addAssignees.mockImplementation(() => []);
@@ -146,8 +146,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "main", ["fgruchala"], true);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -159,7 +159,7 @@ describe("Default", () => {
       owner: "nebetoxyz",
       repo: "create-pull-request--action",
       head: "feat/1-test",
-      target: "main",
+      base: "main",
       draft: true,
       maintainer_can_modify: true,
       issue: 1,
@@ -201,21 +201,22 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
     context.client.rest.issues.addAssignees.mockImplementation(() => []);
 
     await createPullRequest(context, "master", ["fgruchala"], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -229,7 +230,7 @@ describe("Default", () => {
       title: "feat: test",
       body: "test",
       head: "feat/test",
-      target: "master",
+      base: "master",
       draft: false,
       maintainer_can_modify: true,
     });
@@ -264,20 +265,21 @@ describe("Default", () => {
 
     fs.readFileSync.mockImplementation(() => "test");
 
-    github.paginate.mockImplementation(() => []);
-
+    context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
 
     await createPullRequest(context, "master", [], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",
@@ -291,7 +293,7 @@ describe("Default", () => {
       title: "feat: test",
       body: "test",
       head: "feat/test",
-      target: "master",
+      base: "master",
       draft: false,
       maintainer_can_modify: true,
     });
@@ -319,8 +321,7 @@ describe("Default", () => {
     };
 
     context.client.rest.pulls.list.mockImplementation(() => []);
-
-    github.paginate.mockImplementation(() => [
+    context.client.paginate.mockImplementation(() => [
       {
         number: 1,
         html_url:
@@ -333,8 +334,8 @@ describe("Default", () => {
 
     await createPullRequest(context, "master", ["fgruchala"], false);
 
-    expect(github.paginate).toHaveBeenCalledTimes(1);
-    expect(github.paginate).toHaveBeenCalledWith(
+    expect(context.client.paginate).toHaveBeenCalledTimes(1);
+    expect(context.client.paginate).toHaveBeenCalledWith(
       context.client.rest.pulls.list,
       {
         owner: "nebetoxyz",

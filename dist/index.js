@@ -31246,14 +31246,15 @@ var githubExports = requireGithub();
 
 /**
  * Get {@link Context}.
+ * @param {string} token
  * @returns {Context}
  *
  * @author Francois GRUCHALA <francois@nebeto.xyz>
  *
  * @example
- * const {client, owner, repository, source} = getContext();
+ * const {client, owner, repository, source} = getContext("xxx");
  */
-function getContext() {
+function getContext(token) {
   const { owner, repo } = githubExports.context.repo;
 
   const source = {
@@ -31264,7 +31265,7 @@ function getContext() {
   const [id, summary] = /(\d*)-?([\w-]*)/.exec(issue[0]).slice(1);
 
   return {
-    client: githubExports.getOctokit(githubExports.token),
+    client: githubExports.getOctokit(token),
     owner,
     repository: repo,
     source: {
@@ -31296,10 +31297,13 @@ function getContext() {
  * const [{id, url, source}, ...] = await getAllPullRequests(context);
  */
 async function getAllPullRequests(context) {
-  const pullRequests = await githubExports.paginate(context.client.rest.pulls.list, {
-    owner: context.owner,
-    repo: context.repository,
-  });
+  const pullRequests = await context.client.paginate(
+    context.client.rest.pulls.list,
+    {
+      owner: context.owner,
+      repo: context.repository,
+    }
+  );
 
   return pullRequests.map((pullRequest) => ({
     id: pullRequest.number,
@@ -31355,7 +31359,7 @@ async function createPullRequest(
     owner: context.owner,
     repo: context.repository,
     head: context.source.branch,
-    target: targetBranch,
+    base: targetBranch,
     draft: isDraft,
     maintainer_can_modify: true,
   };
@@ -31369,9 +31373,9 @@ async function createPullRequest(
     data["body"] = comment;
   }
 
-  const { number: id, html_url: url } = await context.client.rest.pulls.create(
-    data
-  );
+  const { number: id, html_url: url } = (
+    await context.client.rest.pulls.create(data)
+  ).data;
 
   await Promise.all([
     context.source.id
@@ -31454,12 +31458,13 @@ function addCommentByPullRequestId(context, id, comment) {
 }
 
 async function main() {
+  const token = coreExports.getInput("github-token");
   const targetBranch = coreExports.getInput("to-branch");
   const assignees = coreExports.getInput("assignees").split(/[\r\n]/);
   const isDraft = coreExports.getBooleanInput("is-draft");
 
   try {
-    const context = getContext();
+    const context = getContext(token);
     const { id, url } = await createPullRequest(
       context,
       targetBranch,
