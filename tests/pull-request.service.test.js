@@ -134,9 +134,11 @@ describe("Default", () => {
     context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
     context.client.rest.issues.addAssignees.mockImplementation(() => []);
@@ -202,9 +204,11 @@ describe("Default", () => {
     context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
     context.client.rest.issues.addAssignees.mockImplementation(() => []);
@@ -264,9 +268,11 @@ describe("Default", () => {
     context.client.paginate.mockImplementation(() => []);
     context.client.rest.pulls.list.mockImplementation(() => []);
     context.client.rest.pulls.create.mockImplementation(() => ({
-      number: 1,
-      html_url:
-        "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      data: {
+        number: 1,
+        html_url:
+          "https://github.com/nebetoxyz/create-pull-request-action/pulls/1",
+      },
     }));
     context.client.rest.issues.addLabels.mockImplementation(() => []);
 

@@ -142,7 +142,10 @@ More informations about [permissions in Github Action](https://docs.github.com/e
 
 ### Template of a Pull Request
 
-Your project need to have a `.github/PULL_REQUEST_TEMPLATE.md` file, e.g. :
+> [!ERROR]
+> ENOENT: no such file or directory, open '.github/PULL_REQUEST_TEMPLATE.md'
+
+Your project need to have a `PULL_REQUEST_TEMPLATE.md` file in the `.github/` directory, e.g. :
 
 ```markdown
 # Gentle Reminder

@@ -96,9 +96,9 @@ export async function createPullRequest(
     data["body"] = comment;
   }
 
-  const { number: id, html_url: url } = await context.client.rest.pulls.create(
-    data
-  );
+  const { number: id, html_url: url } = (
+    await context.client.rest.pulls.create(data)
+  ).data;
 
   await Promise.all([
     context.source.id
