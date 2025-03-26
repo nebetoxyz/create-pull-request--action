@@ -27,8 +27,7 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
     to-branch: "main"
 
     # Usernames of people to assign this Pull Request to.
-    assignees: |
-      "fgruchala"
+    assignees: "fgruchala"
 ```
 
 You will have as outputs :
@@ -75,6 +74,7 @@ jobs:
         uses: nebetoxyz/create-pull-request--action@v1.13.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          assignees: ${{ github.actor }}
 ```
 
 ### Create a Pull Request with explicit assignees
@@ -115,7 +115,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-draft: false
-          assignees: |-
+          assignees: |
             ${{ github.actor }}
             fgruchala
 ```
