@@ -12,7 +12,7 @@ Works **ONLY** with [Github Action](https://github.com/features/actions).
 
 ```yaml
 - id: step-id
-  uses: nebetoxyz/create-pull-request--action@vx.x.x
+  uses: nebetoxyz/create-pull-request--action@v1.14.0
   with:
     # A valid Github token.
     github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v4
       - id: create-or-get-existing-pull-request
         name: Create or get an existing Pull Request on Github
-        uses: nebetoxyz/create-pull-request--action@v1.13.0
+        uses: nebetoxyz/create-pull-request--action@v1.14.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: ${{ github.actor }}
@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4
       - id: create-or-get-existing-pull-request
         name: Create or get an existing Pull Request on Github
-        uses: nebetoxyz/create-pull-request--action@v1.13.0
+        uses: nebetoxyz/create-pull-request--action@v1.14.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-draft: false
@@ -142,14 +142,12 @@ More informations about [permissions in Github Action](https://docs.github.com/e
 
 ### Template of a Pull Request
 
-> [!ERROR]
+> [!CAUTION]
 > ENOENT: no such file or directory, open '.github/PULL_REQUEST_TEMPLATE.md'
 
 Your project need to have a `PULL_REQUEST_TEMPLATE.md` file in the `.github/` directory, e.g. :
 
 ```markdown
-# Gentle Reminder
-
 - [ ] I have performed a self-review of my code ;
 - [ ] I have updated all dependencies, to keep up to date and secure our product ;
 - [ ] I have checked [SonarQube](https://sonarcloud.io/project/overview?id=nebetoxyz_create-pull-request-action) ;
