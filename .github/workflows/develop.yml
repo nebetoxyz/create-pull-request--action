@@ -64,7 +64,7 @@ jobs:
           name: reports-check-quality
           path: |
             reports-eslint-code.json
-            reports-eslint-tests.json
+            reports-eslint-test.json
   check-testing:
     runs-on: ubuntu-latest
     name: Check Testing
