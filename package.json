@@ -25,8 +25,8 @@
     "ci"
   ],
   "scripts": {
-    "lint:code": "eslint src/ --format json --output-file reports/eslint/code-report.json",
-    "lint:test": "eslint tests/ --format json --output-file reports/eslint/test-report.json",
+    "lint:code": "eslint src/ --format json --output-file reports-eslint-code.json",
+    "lint:test": "eslint tests/ --format json --output-file reports-eslint-test.json",
     "lint": "npm run lint:code && npm run lint:test",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "build": "rollup --config rollup.config.js"

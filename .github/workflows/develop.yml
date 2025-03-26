@@ -63,8 +63,8 @@ jobs:
         with:
           name: reports-check-quality
           path: |
-            reports/eslint/code-report.json
-            reports/eslint/tests-report.json
+            reports-eslint-code.json
+            reports-eslint-tests.json
   check-testing:
     runs-on: ubuntu-latest
     name: Check Testing
@@ -89,10 +89,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reports-check-testing
-          path: reports/jest/lcov.info
-  report-quality:
+          path: lcov.info
+  report:
     runs-on: ubuntu-latest
-    name: Report Quality
+    name: Report
     needs: [check-quality, check-testing]
     steps:
       - id: checkout-code

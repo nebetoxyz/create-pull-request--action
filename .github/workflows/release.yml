@@ -33,9 +33,9 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: node
-  report-quality:
+  report:
     runs-on: ubuntu-latest
-    name: Report Quality
+    name: Report
     needs: release
     if: ${{ needs.release.outputs.release_created }}
     steps:
