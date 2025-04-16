@@ -2,8 +2,8 @@
 name: Bug
 about: Create a report to help us improve
 title: ""
-labels: bug, tlp:clear
-assignees: ""
+labels: bug, tlp:red
+assignees: "nebetoxyz/developers"
 ---
 
 **Describe the bug**
