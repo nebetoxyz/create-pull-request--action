@@ -1,3 +1,5 @@
 node_modules/
 reports-*
 lcov.info
+lcov-report/
+coverage-summary.json

@@ -2,7 +2,7 @@
 
 .vscode/ @nebetoxyz/admins
 
-LICENCE.md @nebetoxyz/admins
+LICENSE.md @nebetoxyz/admins
 CONTRIBUTING.md @nebetoxyz/admins
 SECURITY.md @nebetoxyz/admins
 FUNDING.yml @nebetoxyz/admins
@@ -16,4 +16,5 @@ action.yml @nebetoxyz/developers @nebetoxyz/admins
 .gitignore @nebetoxyz/developers @nebetoxyz/admins
 eslint.config.js @nebetoxyz/developers @nebetoxyz/admins
 jest.config.js @nebetoxyz/developers @nebetoxyz/admins
+rollup.config.js @nebetoxyz/developers @nebetoxyz/admins
 sonar-project.properties @nebetoxyz/developers @nebetoxyz/admins
