@@ -43,10 +43,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: ${{ github.actor }}
-  check-quality:
+  check:
     runs-on: ubuntu-latest
-    name: Check Quality
+    name: Check
     needs: create-pull-request
+    strategy:
+      matrix:
+        command: ["lint", "test"]
+        include:
+          - artifact-name: reports-check-quality
+            files: |
+              reports-eslint-code.json
+              reports-eslint-test.json
+            command: lint
+          - artifact-name: reports-check-testing
+            files: lcov.info
+            command: test
     steps:
       - id: checkout-code
         uses: actions/checkout@v4.2.2
@@ -59,46 +71,19 @@ jobs:
       - id: setup-dependencies
         name: Setup dependencies
         run: npm install
-      - id: lint-code
-        name: Lint
-        run: npm run lint
+      - id: check-code
+        name: Check code via "npm run ${{ matrix.command }}"
+        run: npm run ${{ matrix.command }}
       - id: upload-reports
         name: Upload Reports
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: reports-check-quality
-          path: |
-            reports-eslint-code.json
-            reports-eslint-test.json
-  check-testing:
-    runs-on: ubuntu-latest
-    name: Check Testing
-    needs: create-pull-request
-    steps:
-      - id: checkout-code
-        uses: actions/checkout@v4.2.2
-      - id: setup-node
-        uses: actions/setup-node@v4.3.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - id: setup-dependencies
-        name: Setup dependencies
-        run: npm install
-      - id: test-code
-        name: Test
-        run: npm run test
-      - id: upload-reports
-        name: Upload Reports
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: reports-check-testing
-          path: lcov.info
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.files }}
   report:
     runs-on: ubuntu-latest
     name: Report
-    needs: [check-quality, check-testing]
+    needs: check
     steps:
       - id: checkout-code
         uses: actions/checkout@v4.2.2
